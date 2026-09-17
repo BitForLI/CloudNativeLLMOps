@@ -53,6 +53,23 @@ python -m evals.run_eval
 
 The test suite covers API behaviour, authentication, provider selection, durable job transitions, duplicate delivery, retry handling, telemetry, and deployment-policy checks.
 
+## Evidence behind project claims
+
+The [FastAPI endpoints](services/api/app/main.py) and
+[job service](services/api/app/job_service.py) implement submission and status
+retrieval. The [SQS/DynamoDB adapters](services/worker/app/aws_jobs.py) and
+[worker](services/worker/app/worker.py) implement the AWS-mode processing path;
+[local tests](services/worker/tests/test_durable_worker.py) check that success is
+saved before acknowledgement, retries are left unacknowledged, and a duplicate
+completed job does not invoke the model twice.
+
+[Trace propagation](services/common/observability/tracing.py) connects the API
+request to worker processing without attaching prompts to spans. The
+[Terraform environments](terraform/environments/) and
+[deployment workflows](.github/workflows/) define AWS infrastructure and
+release gates. These files document an implementation, not a measured claim of
+live AWS uptime or production traffic.
+
 ## AWS mode
 
 Set `LLM_PROVIDER=bedrock` and choose a model with `BEDROCK_MODEL_ID`. In ECS, the task role supplies credentials. Setting `JOB_BACKEND=aws` moves job state to DynamoDB and work distribution to SQS.
@@ -70,7 +87,7 @@ See [`terraform/README.md`](terraform/README.md) for state, cost, and environmen
 ## Delivery flow
 
 1. Pull requests run formatting, tests, evaluation, and dependency checks.
-2. A successful `master` build creates immutable API and worker images and deploys development.
+2. After successful `master` CI, the configured development workflow builds immutable API and worker images and deploys them; it is skipped without the AWS deployment role variable.
 3. Staging promotion reuses those image digests and runs integration and performance checks.
 4. Production uses a protected environment, an error-budget gate, and blue/green deployment.
 5. A failed rollout restores the previous task definitions.
