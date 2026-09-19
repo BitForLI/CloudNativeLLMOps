@@ -1,4 +1,4 @@
-# Cloud-Native LLMOps on AWS
+# Reliable LLM Job Platform on AWS
 
 An asynchronous LLM platform for requests that may take time, fail, or need to be retried without losing the job or processing it twice.
 
