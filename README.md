@@ -1,6 +1,18 @@
 # Cloud-Native LLMOps on AWS
 
-An asynchronous LLM service that explores what changes when a small FastAPI application is operated as a real cloud workload. It includes durable jobs, repeatable evaluation, infrastructure as code, deployment gates, metrics, tracing, and rollback paths.
+An asynchronous LLM platform for requests that may take time, fail, or need to be retried without losing the job or processing it twice.
+
+## Product at a glance
+
+| | |
+| --- | --- |
+| **Users** | Application teams that need to submit and track long-running LLM work |
+| **Problem** | A synchronous model call is not enough when jobs must survive retries, deployments, and provider failures |
+| **Core experience** | Submit a job, receive an ID immediately, and check its durable status later |
+| **Local mode** | Deterministic provider for development, tests, and evaluation without model charges |
+| **AWS mode** | FastAPI, SQS, DynamoDB, Bedrock, ECS Fargate, Terraform, and CloudWatch |
+
+The repository shows the engineering around the model call: durable processing, repeatable evaluation, infrastructure as code, deployment gates, observability, privacy boundaries, and rollback paths.
 
 The project runs with a deterministic local provider by default, so its behaviour can be tested without AWS credentials or model calls.
 
